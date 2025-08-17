@@ -122,8 +122,23 @@ if selected_player:
         })
 
         radar_df.set_index("Metric", inplace=True)
-        radar_df_norm = (radar_df - radar_df.min()) / (radar_df.max() - radar_df.min()) * 100
-        radar_df_norm.reset_index(inplace=True)
+
+        # Normalize each metric using the whole filtered dataset
+        radar_df_norm = pd.DataFrame(index=radar_df.index)
+
+       for col in radar_df.columns:
+       radar_df_norm[col] = [
+       (filtered_df[m].min(), filtered_df[m].max()) for m in radar_df.index
+       ]  # temp placeholder
+
+      # Proper normalization
+      for metric in radar_df.index:
+      min_val = filtered_df[metric].min()
+      max_val = filtered_df[metric].max()
+      for col in radar_df.columns:
+        radar_df_norm.loc[metric, col] = (radar_df.loc[metric, col] - min_val) / (max_val - min_val) * 100
+
+     radar_df_norm.reset_index(inplace=True)
 
         fig = go.Figure()
         # Orange for selected
