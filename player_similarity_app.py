@@ -114,9 +114,15 @@ if not similar_players.empty:
     top_similar = similar_players.iloc[0]
     similar_player_name = top_similar["Name"]
 
+    # Use a version of filtered_df that has the metrics safely
+    df_metrics = filtered_df.dropna(subset=comparison_columns).reset_index(drop=True)
+
+    # Find index again inside df_metrics
+    player_idx_metrics = df_metrics[df_metrics["Name"] == selected_player].index[0]
+
     radar_df = pd.DataFrame({
         "Metric": comparison_columns,
-        selected_player: [filtered_df.loc[player_idx, col] for col in comparison_columns],
+        selected_player: [df_metrics.loc[player_idx_metrics, col] for col in comparison_columns],
         similar_player_name: [top_similar[col] for col in comparison_columns]
     })
 
@@ -126,8 +132,8 @@ if not similar_players.empty:
     radar_df_norm = pd.DataFrame(index=radar_df.index)
 
     for metric in radar_df.index:
-        min_val = filtered_df[metric].min()
-        max_val = filtered_df[metric].max()
+        min_val = df_metrics[metric].min()
+        max_val = df_metrics[metric].max()
 
         for col in radar_df.columns:
             val = radar_df.loc[metric, col]
