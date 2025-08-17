@@ -122,7 +122,7 @@ if not similar_players.empty:
 
     radar_df.set_index("Metric", inplace=True)
 
-    # Normalize values into [0,100] (higher = better, no flipping)
+    # Normalize values into [0,100]
     radar_df_norm = pd.DataFrame(index=radar_df.index)
 
     for metric in radar_df.index:
@@ -131,7 +131,6 @@ if not similar_players.empty:
 
         for col in radar_df.columns:
             val = radar_df.loc[metric, col]
-
             if max_val > min_val:
                 norm_val = (val - min_val) / (max_val - min_val) * 100
                 radar_df_norm.loc[metric, col] = norm_val
@@ -140,36 +139,40 @@ if not similar_players.empty:
 
     radar_df_norm.reset_index(inplace=True)
 
+    # Create radar chart
     fig = go.Figure()
-    # Orange for selected
+
+    # Orange for selected player
     fig.add_trace(go.Scatterpolar(
-            r=radar_df_norm[selected_player],
-            theta=radar_df_norm["Metric"],
-            fill='toself',
-            name=selected_player,
-            line=dict(color="orange"),
-            fillcolor="rgba(255,165,0,0.3)"
+        r=radar_df_norm[selected_player],
+        theta=radar_df_norm["Metric"],
+        fill='toself',
+        name=selected_player,
+        line=dict(color="orange"),
+        fillcolor="rgba(255,165,0,0.3)"
     ))
-    # Blue for top similar
+
+    # Blue for top similar player
     fig.add_trace(go.Scatterpolar(
-            r=radar_df_norm[similar_player_name],
-            theta=radar_df_norm["Metric"],
-            fill='toself',
-            name=similar_player_name,
-            line=dict(color="blue"),
-            fillcolor="rgba(0,0,255,0.3)"
+        r=radar_df_norm[similar_player_name],
+        theta=radar_df_norm["Metric"],
+        fill='toself',
+        name=similar_player_name,
+        line=dict(color="blue"),
+        fillcolor="rgba(0,0,255,0.3)"
     ))
 
     fig.update_layout(
-            polar=dict(
-                radialaxis=dict(visible=True, range=[0, 100]),
-            ),
-            showlegend=True,
-            title=dict(text=f"{selected_player} vs {similar_player_name}", x=0.5)
+        polar=dict(
+            radialaxis=dict(visible=True, range=[0, 100]),
+        ),
+        showlegend=True,
+        title=dict(text=f"{selected_player} vs {similar_player_name}", x=0.5)
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
+# Footer
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown(
     "<div style='text-align: center; font-size:14px;'>"
@@ -177,3 +180,4 @@ st.markdown(
     "</div>",
     unsafe_allow_html=True
 )
+
