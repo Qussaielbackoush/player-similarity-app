@@ -140,7 +140,7 @@ if not similar_players.empty:
 
     radar_df_norm.reset_index(inplace=True)
 
-        fig = go.Figure()
+    fig = go.Figure()
         # Orange for selected
         fig.add_trace(go.Scatterpolar(
             r=radar_df_norm[selected_player],
