@@ -5,7 +5,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import plotly.graph_objects as go
 
 # Load and clean data
-df = pd.read_csv(r"C:\Users\backo\OneDrive\Desktop\prototype\Player_Data_Final.xls.csv")
+df = pd.read_csv("Player_Data_Final.xls.csv")
 
 # Define metrics by position
 metrics_by_position = {
