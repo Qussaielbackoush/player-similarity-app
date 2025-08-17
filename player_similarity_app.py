@@ -114,8 +114,8 @@ if not similar_players.empty:
     top_similar = similar_players.iloc[0]
     similar_player_name = top_similar["Name"]
 
-    # Use a version of filtered_df that has the metrics safely
-    df_metrics = filtered_df.dropna(subset=comparison_columns).reset_index(drop=True)
+    # Use the already filtered metrics dataframe
+    df_metrics = df_filtered_metrics.copy()
 
     # Find index again inside df_metrics
     player_idx_metrics = df_metrics[df_metrics["Name"] == selected_player].index[0]
@@ -177,13 +177,3 @@ if not similar_players.empty:
     )
 
     st.plotly_chart(fig, use_container_width=True)
-
-# Footer
-st.markdown("<hr>", unsafe_allow_html=True)
-st.markdown(
-    "<div style='text-align: center; font-size:14px;'>"
-    "© 2025 Developed by <b>Qussai Elbackoush</b> – All Rights Reserved"
-    "</div>",
-    unsafe_allow_html=True
-)
-
