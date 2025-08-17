@@ -106,39 +106,39 @@ if selected_player:
     # Similar players
     st.markdown(f"### 🧬 Similar Players to {selected_player}")
     st.dataframe(similar_players[["Name", "Team", "Pos", "Age", "Similarity"] + comparison_columns].head(num_results), use_container_width=True)
+# Radar chart
+if not similar_players.empty:
+    st.markdown("---")
+    st.markdown("## 📊 Radar Comparison")
 
-    # Radar chart
-    if not similar_players.empty:
-        st.markdown("---")
-        st.markdown("## 📊 Radar Comparison")
+    top_similar = similar_players.iloc[0]
+    similar_player_name = top_similar["Name"]
 
-        top_similar = similar_players.iloc[0]
-        similar_player_name = top_similar["Name"]
+    radar_df = pd.DataFrame({
+        "Metric": comparison_columns,
+        selected_player: [filtered_df.loc[player_idx, col] for col in comparison_columns],
+        similar_player_name: [top_similar[col] for col in comparison_columns]
+    })
 
-        radar_df = pd.DataFrame({
-            "Metric": comparison_columns,
-            selected_player: [df_filtered_metrics.loc[player_idx, col] for col in comparison_columns],
-            similar_player_name: [top_similar[col] for col in comparison_columns]
-        })
+    radar_df.set_index("Metric", inplace=True)
 
-        radar_df.set_index("Metric", inplace=True)
+    # Normalize values into [0,100] (higher = better, no flipping)
+    radar_df_norm = pd.DataFrame(index=radar_df.index)
 
-        # Normalize each metric using the whole filtered dataset
-        radar_df_norm = pd.DataFrame(index=radar_df.index)
+    for metric in radar_df.index:
+        min_val = filtered_df[metric].min()
+        max_val = filtered_df[metric].max()
 
-       for col in radar_df.columns:
-       radar_df_norm[col] = [
-       (filtered_df[m].min(), filtered_df[m].max()) for m in radar_df.index
-       ]  # temp placeholder
+        for col in radar_df.columns:
+            val = radar_df.loc[metric, col]
 
-      # Proper normalization
-      for metric in radar_df.index:
-      min_val = filtered_df[metric].min()
-      max_val = filtered_df[metric].max()
-      for col in radar_df.columns:
-        radar_df_norm.loc[metric, col] = (radar_df.loc[metric, col] - min_val) / (max_val - min_val) * 100
+            if max_val > min_val:
+                norm_val = (val - min_val) / (max_val - min_val) * 100
+                radar_df_norm.loc[metric, col] = norm_val
+            else:
+                radar_df_norm.loc[metric, col] = 50  # fallback if all values are identical
 
-     radar_df_norm.reset_index(inplace=True)
+    radar_df_norm.reset_index(inplace=True)
 
         fig = go.Figure()
         # Orange for selected
